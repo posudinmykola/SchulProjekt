@@ -1,7 +1,7 @@
 """Connect Four
 
 Exercises
-
+ssf
 1. Change the colors.
 2. Draw squares instead of circles for open spaces.
 3. Add logic to detect a full row.
