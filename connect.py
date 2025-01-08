@@ -17,9 +17,11 @@ turns = {'red': 'yellow', 'yellow': 'red'}
 state = {'player': 'red', 'rows': [0] * 8}
 # Инициализация 8x8 массива с None в каждой ячейке
 field = [[None for _ in range(8)] for _ in range(8)]
+winState = [None for _ in range(4)] 
+turn = 0
 #grid1 = [[None for _ in range(state['rows'])] for _ in range(state['rows'])]
 
-
+#initialisierung
 def grid():
     """Draw Connect Four grid."""
     bgcolor('blue')
@@ -35,20 +37,20 @@ def grid():
 
     update()
 
-
+#actionListener
 def tap(x, y):
     """Draw red or yellow circle in tapped row."""
     
     player = state['player']
-    print(player)
+    #print(player)
     
     rows = state['rows']
-    
+
     row = int((x + 200) // 50)
-    print(row)
+   # print(row)
     count = rows[row]
-    print(count)
-    field[count][row] = player
+    #print(count)
+    field[row][count] = player
     x = ((x + 200) // 50) * 50 - 200 + 25
     y = count * 50 - 200 + 25
 
@@ -57,15 +59,37 @@ def tap(x, y):
     dot(40, player)
     update()
     
+    
+    isWon(row,count,player)
     rows[row] = count + 1
     state['player'] = turns[player]
-    for rowOnField in field:
+    """for rowOnField in field:
         for elementOnField in rowOnField:
-            print(element, end='')
-        print()
+            print(elementOnField, end=' ')
+        print()"""
  
+def isWon(x, y, player):
+    
+    counter = 0
+    newlist = [None for _ in range(4)]
+    newlist.insert(0,player)
+    
+   
+    a = x
+    b = y
+    
+    for direction in range(1):
+        for c in range(4):
+            if field[x + c][y + c] == player:
+                 print(counter)
+                 counter +1
+                 print(c)
+    
+    if counter == 4 :
+        print(player + " hat gewonnen")
 
 
+"""Сделать еще один метод, который будет изменять коордианаты. представляя собой все направления проверки"""
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
