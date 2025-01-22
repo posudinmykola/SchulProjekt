@@ -20,9 +20,9 @@ field = [[None for _ in range(8)] for _ in range(8)]
 
 #initialisierung
 def grid():
-    """Draw Connect Four grid."""
-    bgcolor('blue')
-
+    """Draw players move box."""
+    bgcolor('green')
+    
     for x in range(-150, 200, 50):
         line(x, -200, x, 200)
 
@@ -31,8 +31,22 @@ def grid():
             up()
             goto(x, y)
             dot(40, 'pink')
-
+    paintPlayersMoveBox()
     update()
+
+def paintPlayersMoveBox():
+    """Draw players move box."""
+    
+    color('green')
+
+    begin_fill()
+    line(-200, 200, -200, 244)
+    line(-200, 244, 200, 244)
+    line(200, 244, 200, 200)
+    line(200, 200, -200, 200)
+    end_fill()
+
+
 #debug it
 def check_winner(col, row, color):
     directions = [(1, 0), (0, 1), (1, 1), (1, -1)]
@@ -90,9 +104,13 @@ def tap(x, y):
     
 
 """Сделать еще один метод, который будет изменять коордианаты. представляя собой все направления проверки"""
-setup(420, 420, 370, 0)
+setup(440, 520, 370, 0)
+playersMoveBoxTurtle = Turtle()
+
 hideturtle()
+playersMoveBoxTurtle.hideturtle()
 tracer(False)
 grid()
+
 onscreenclick(tap)
 done()
