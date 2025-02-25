@@ -10,8 +10,13 @@ ssf
 """
 
 from turtle import *
-
+from tkinter import *
+from tkinter import ttk
 from freegames import line
+import os
+import sys
+import time
+
 
 turns = {'red': 'yellow', 'yellow': 'red'}
 state = {'player': 'red', 'rows': [0] * 8}
@@ -31,14 +36,15 @@ def grid():
             up()
             goto(x, y)
             dot(40, 'pink')
-    paintPlayersMoveBox()
+    printPlayersMoveBox()
+    
+    printPlayersMoveText(state['player'])
     update()
 
-def paintPlayersMoveBox():
+def printPlayersMoveBox():
     """Draw players move box."""
     
-    color('green')
-
+    color(0, 79/255, 7/255)
     begin_fill()
     line(-200, 200, -200, 244)
     line(-200, 244, 200, 244)
@@ -73,12 +79,15 @@ def check_winner(col, row, color):
 def tap(x, y):
     """Draw red or yellow circle in tapped col."""
     player = state['player']
-    #print(player)
+
+   
+    
+    print(player)
     rows = state['rows']
     col = int((x + 200) // 50)
-    print(col)
+    #print(col)
     row = rows[col]
-    print(row)
+    #print(row)
     field[col][row] = player
     x = ((x + 200) // 50) * 50 - 200 + 25
     y = row * 50 - 200 + 25
@@ -90,20 +99,46 @@ def tap(x, y):
     
     rows[col] = row + 1
     state['player'] = turns[player]
+    printPlayersMoveText(state['player'])
 
-    for rowOnField in field:
-        for elementOnField in rowOnField:
-            print(elementOnField, end='')
-        print()
+   # for rowOnField in field:
+       # for elementOnField in rowOnField:
+            #print(elementOnField, end='')
+        #print()
 
     if check_winner(col, row, player):
         print(player, "wins!")
+        winnerPopUp(player)
         # При желании можно завершить игру:
         onscreenclick(None)  # отключить клики
-        
+def printPlayersMoveText(player):
     
+    playersMoveBoxTurtle.goto(-196, 206)
+    playersMoveBoxTurtle.clear()
+    playersMoveBoxTurtle.color(player)
+    part1 = "'s player"
+    part2 = " turn"
+    insert_text = player
+    new_text = insert_text.capitalize()
+    formatted_text = f"{new_text}{part1}{part2}"
+    print(formatted_text)
 
-"""Сделать еще один метод, который будет изменять коордианаты. представляя собой все направления проверки"""
+    playersMoveBoxTurtle.write(formatted_text, align="left", font=("Verdana",
+                                    24, "normal"))
+
+def winnerPopUp(player):
+    insert_text = player
+    new_text = insert_text.capitalize()
+    win = Tk()
+    win.geometry("600x200")
+    Label(win, text= new_text + " player won!", font=('Verdana 40 bold')).pack(pady=20)
+    #Button(win, text= "Restart", command= onscreenclick(restartProgramm())).pack()
+    Button(win, text= "Quit", command= root.destroy).pack()
+
+def restartProgramm():
+    time.sleep(2)
+    os.execl(sys.executable, sys.executable, *sys.argv)
+
 setup(440, 520, 370, 0)
 playersMoveBoxTurtle = Turtle()
 
