@@ -16,6 +16,7 @@ from freegames import line
 import os
 import sys
 import time
+import random
 
 
 turns = {'red': 'yellow', 'yellow': 'red'}
@@ -75,14 +76,41 @@ def check_winner(col, row, color):
             return True
     return False
 
+def checkFieldsFreeSpace():
+    counter = 0
+    print(state['rows'])
+     
+def computerMove():
+    randomNumber = random.randint(0, 7)
+    availableColumns = getAvailableColumns()
+    columnForMove = getRandomColumnForMove(availableColumns, randomNumber)
+    print(columnForMove)
+
+def getRandomColumnForMove(list, randomNumber):
+    print(randomNumber)
+    # Проверяем, есть ли randomNumber в available
+    if randomNumber in list:
+        return randomNumber
+    else:
+        # Если случайный номер недоступен, можно повторить попытку
+        return getRandomColumnForMove(list,randomNumber)  # рекурсивный вызов
+            
+
+def getAvailableColumns():
+    available = []  # Список для хранения допустимых столбцов
+    for col in range(8):  # Перебираем столбцы от 0 до 7
+        if state['rows'][col] < 8:  # Если в столбце ещё есть свободное место           
+            available.append(col)
+    return available
+
 #actionListener
 def tap(x, y):
     """Draw red or yellow circle in tapped col."""
     player = state['player']
 
-   
-    
-    print(player)
+    #if player == "yellow":
+    #    computerMove()
+
     rows = state['rows']
     col = int((x + 200) // 50)
     #print(col)
@@ -97,20 +125,22 @@ def tap(x, y):
     dot(40, player)
     update()
     
+    print(state['rows'])
     rows[col] = row + 1
     state['player'] = turns[player]
     printPlayersMoveText(state['player'])
 
-   # for rowOnField in field:
-       # for elementOnField in rowOnField:
-            #print(elementOnField, end='')
-        #print()
+    #for rowOnField in field:
+        #for elementOnField in rowOnField:
+           # print(elementOnField, end='')
+       # print()
 
     if check_winner(col, row, player):
         print(player, "wins!")
         winnerPopUp(player)
         # При желании можно завершить игру:
         onscreenclick(None)  # отключить клики
+
 def printPlayersMoveText(player):
     
     playersMoveBoxTurtle.goto(-196, 206)
@@ -148,4 +178,5 @@ tracer(False)
 grid()
 
 onscreenclick(tap)
+
 done()
