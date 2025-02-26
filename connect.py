@@ -37,8 +37,8 @@ def grid():
             up()
             goto(x, y)
             dot(40, 'pink')
-    printPlayersMoveBox()
     
+    printPlayersMoveBox()
     printPlayersMoveText(state['player'])
     update()
 
@@ -75,10 +75,6 @@ def check_winner(col, row, color):
         if count >= 4:
             return True
     return False
-
-def checkFieldsFreeSpace():
-    counter = 0
-    print(state['rows'])
      
 def computerMove():
     randomNumber = random.randint(0, 7)
@@ -103,9 +99,12 @@ def getAvailableColumns():
             available.append(col)
     return available
 
+#def move
+
 #actionListener
 def tap(x, y):
     """Draw red or yellow circle in tapped col."""
+    """TO-DO! Проверить работу и возможно что то вынести в другие методы"""
     player = state['player']
 
     #if player == "yellow":
@@ -125,7 +124,7 @@ def tap(x, y):
     dot(40, player)
     update()
     
-    print(state['rows'])
+    
     rows[col] = row + 1
     state['player'] = turns[player]
     printPlayersMoveText(state['player'])
