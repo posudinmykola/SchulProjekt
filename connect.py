@@ -79,11 +79,10 @@ def check_winner(col, row, color):
 def computerMove():
     availableColumns = getAvailableColumns()
     if not availableColumns:
-        return  # нет доступных столбцов, игра окончена
+        return  # No available columns, game is over
+    
     columnForMove = random.choice(availableColumns)
-    # Теперь используем тот же код, что и в tap(), для размещения фишки компьютера
     player = state['player']
-    print(player)
     rows = state['rows']
     row = rows[columnForMove]
     field[columnForMove][row] = player
@@ -97,18 +96,16 @@ def computerMove():
 
     rows[columnForMove] = row + 1
 
+    # Check for winner
     if check_winner(columnForMove, row, player):
         print(player, "wins!")
+        onscreenclick(None)  # Disable clicks when game is over
         winnerPopUp(player)
-        onscreenclick(None)
         return
 
-    # Меняем игрока после хода компьютера
+    # Change player after computer's move
     state['player'] = turns[player]
     printPlayersMoveText(state['player'])
-
-
-
 
 def getRandomColumnForMove(list, randomNumber):
     # Проверяем, есть ли randomNumber в available
@@ -132,7 +129,8 @@ def getAvailableColumns():
 def tap(x, y):
     """Draw red or yellow circle in tapped col."""
     player = state['player']
-    # Если ход компьютера, клики игнорируем
+    
+    # If it's computer's turn (yellow), ignore clicks
     if player == 'yellow':
         return
 
@@ -154,17 +152,19 @@ def tap(x, y):
     update()
 
     rows[col] = row + 1
+    
+    # Check for winner
     if check_winner(col, row, player):
         print(player, "wins!")
+        onscreenclick(None)  # Disable clicks when game is over
         winnerPopUp(player)
-        onscreenclick(None)
         return
 
-    # Меняем игрока и обновляем плашку
+    # Change player and update text
     state['player'] = turns[player]
     printPlayersMoveText(state['player'])
 
-    # Если следующий ход за компьютером, запускаем его с небольшой задержкой
+    # If next move is computer's, run with a small delay
     if state['player'] == 'yellow':
         ontimer(computerMove, 500)
 
@@ -188,14 +188,48 @@ def winnerPopUp(player):
     insert_text = player
     new_text = insert_text.capitalize()
     win = Tk()
+    win.title("Game Over")
     win.geometry("600x200")
     Label(win, text= new_text + " player won!", font=('Verdana 40 bold')).pack(pady=20)
-    #Button(win, text= "Restart", command= onscreenclick(restartProgramm())).pack()
-    Button(win, text= "Quit", command= root.destroy).pack()
+    
+    # Create a frame for buttons
+    button_frame = Frame(win)
+    button_frame.pack(pady=10)
+    
+    # New Game button
+    Button(button_frame, text="New Game", command=lambda: restart_game(win), 
+           font=('Verdana', 12), padx=10).pack(side=LEFT, padx=10)
+    
+    # Quit button that closes both the popup and the main game window
+    Button(button_frame, text="Quit", command=lambda: quit_game(win), 
+           font=('Verdana', 12), padx=10).pack(side=LEFT, padx=10)
 
-def restartProgramm():
-    time.sleep(2)
-    os.execl(sys.executable, sys.executable, *sys.argv)
+
+def quit_game(win_window):
+    win_window.destroy()  # Close the popup window
+    bye()                 # Close the turtle graphics window
+    sys.exit()  
+
+def restart_game(win_window=None):
+    # Close the winner popup if it exists
+    if win_window:
+        win_window.destroy()
+    
+    # Reset game state
+    state['player'] = 'red'
+    state['rows'] = [0] * 8
+    
+    # Reset field
+    for i in range(8):
+        for j in range(8):
+            field[i][j] = None
+    
+    # Clear the screen and redraw
+    clear()
+    grid()
+    
+    # Re-enable clicks
+    onscreenclick(tap)
 
 setup(440, 520, 370, 0)
 playersMoveBoxTurtle = Turtle()
