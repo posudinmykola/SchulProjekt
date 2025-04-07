@@ -54,18 +54,18 @@ def printPlayersMoveBox():
     end_fill()
 
 
-#debug it
+
 def check_winner(col, row, color):
     directions = [(1, 0), (0, 1), (1, 1), (1, -1)]
     for dc, dr in directions:
         count = 1
-        # вперёд
+        
         c_next, r_next = col + dc, row + dr
         while 0 <= c_next < 8 and 0 <= r_next < 8 and field[c_next][r_next] == color:
             count += 1
             c_next += dc
             r_next += dr
-        # назад
+     
         c_prev, r_prev = col - dc, row - dr
         while 0 <= c_prev < 8 and 0 <= r_prev < 8 and field[c_prev][r_prev] == color:
             count += 1
@@ -77,18 +77,47 @@ def check_winner(col, row, color):
     return False
      
 def computerMove():
-    randomNumber = random.randint(0, 7)
     availableColumns = getAvailableColumns()
-    columnForMove = getRandomColumnForMove(availableColumns, randomNumber)
-    print(columnForMove)
+    if not availableColumns:
+        return  # нет доступных столбцов, игра окончена
+    columnForMove = random.choice(availableColumns)
+    # Теперь используем тот же код, что и в tap(), для размещения фишки компьютера
+    player = state['player']
+    print(player)
+    rows = state['rows']
+    row = rows[columnForMove]
+    field[columnForMove][row] = player
+    draw_x = columnForMove * 50 - 200 + 25
+    draw_y = row * 50 - 200 + 25
+
+    up()
+    goto(draw_x, draw_y)
+    dot(40, player)
+    update()
+
+    rows[columnForMove] = row + 1
+
+    if check_winner(columnForMove, row, player):
+        print(player, "wins!")
+        winnerPopUp(player)
+        onscreenclick(None)
+        return
+
+    # Меняем игрока после хода компьютера
+    state['player'] = turns[player]
+    printPlayersMoveText(state['player'])
+
+
+
 
 def getRandomColumnForMove(list, randomNumber):
-    print(randomNumber)
     # Проверяем, есть ли randomNumber в available
     if randomNumber in list:
+        print(randomNumber)
         return randomNumber
     else:
         # Если случайный номер недоступен, можно повторить попытку
+        print(randomNumber)
         return getRandomColumnForMove(list,randomNumber)  # рекурсивный вызов
             
 
@@ -99,46 +128,46 @@ def getAvailableColumns():
             available.append(col)
     return available
 
-#def move
 
-#actionListener
 def tap(x, y):
     """Draw red or yellow circle in tapped col."""
-    """TO-DO! Проверить работу и возможно что то вынести в другие методы"""
     player = state['player']
-
-    #if player == "yellow":
-    #    computerMove()
+    # Если ход компьютера, клики игнорируем
+    if player == 'yellow':
+        return
 
     rows = state['rows']
     col = int((x + 200) // 50)
-    #print(col)
+    if not (0 <= col < 8):
+        return
     row = rows[col]
-    #print(row)
+    if row >= 8:
+        return
+
     field[col][row] = player
-    x = ((x + 200) // 50) * 50 - 200 + 25
-    y = row * 50 - 200 + 25
+    x_coord = ((x + 200) // 50) * 50 - 200 + 25
+    y_coord = row * 50 - 200 + 25
 
     up()
-    goto(x, y)
+    goto(x_coord, y_coord)
     dot(40, player)
     update()
-    
-    
+
     rows[col] = row + 1
-    state['player'] = turns[player]
-    printPlayersMoveText(state['player'])
-
-    #for rowOnField in field:
-        #for elementOnField in rowOnField:
-           # print(elementOnField, end='')
-       # print()
-
     if check_winner(col, row, player):
         print(player, "wins!")
         winnerPopUp(player)
-        # При желании можно завершить игру:
-        onscreenclick(None)  # отключить клики
+        onscreenclick(None)
+        return
+
+    # Меняем игрока и обновляем плашку
+    state['player'] = turns[player]
+    printPlayersMoveText(state['player'])
+
+    # Если следующий ход за компьютером, запускаем его с небольшой задержкой
+    if state['player'] == 'yellow':
+        ontimer(computerMove, 500)
+
 
 def printPlayersMoveText(player):
     
@@ -176,6 +205,6 @@ playersMoveBoxTurtle.hideturtle()
 tracer(False)
 grid()
 
+print(state['player'])
 onscreenclick(tap)
-
 done()
